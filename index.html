@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset = "utf8"/>
+		<link rel = "stylesheet" href="style.css" type="text/css" />
+		<title> Vue.js Weather </title>
+		<script src="https://unpkg.com/vue@next"></script>
+
+	</head>
+	<body style='background-color: #000000'>
+		<div id = "my-app">
+			<div style = "background-color: #0000FF" class = "stuff-box">	
+				<h1> Vue.js Weather </h2>
+			</div>
+			<div style = "background-color: #AA00DD" class = "stuff-box">
+				<h2> {{location_loading}} </h2>
+				<p id = "main_div_location_text">You are located in {{city}}, {{state}}, {{country}} at coordinates ( {{latitude}}, {{longitude}} )</p>
+			</div>
+			<div style = "background-color: #00DDAA" class = "stuff-box">
+				<h2> {{current_weather_loading}} </h2>
+
+				<p> Current weather conditions @ {{current_time}}<p>
+				<ul>
+					<li id = "current_temp"> Currently: {{ current_temp }} </li>
+					<li id = "high_temp"> High: {{ high_temp }} </li>
+					<li id = "low_temp"> Low: {{low_temp}} </li>
+					<li id = "weather_condition"> {{sky_conditions}} </li>
+					<li id = "humidity"> {{humidity}}% humidity </li>
+					<li id = "pressure"> {{pressure}} hPa Pressure </li>
+				</ul>
+			</div>
+			<div id = "5day_forecast" style = "background-color: #AADDFF" class = "stuff-box">
+				<h1> {{forecast_loading}} </h1>
+				<h3> {{num_neutral}} neutral </h3>
+				<h3> {{num_likely}} likely </h3>
+				<h3> {{num_unlikely}} unlikely </h3>
+
+				<div class = "neutral" v-for="(item,idx) in five_day_forecast"
+				     :data-index="idx"
+				     :status = "0"
+				     @click="toggle"
+				     >
+				     <h2> Conditions for {{item.dt_txt}} </h2>
+				     <ul>
+					     <li> Temperature {{item.main.temp}} </li>
+					     <li> {{item.weather[0].main}} </li>
+					     <li> {{item.main.humidity}}% humidity </li>
+					     <li> {{item.main.pressure}} hPa </li>
+				     </ul>
+				</div>
+				
+
+			</div>
+		</div>
+
+
+		<script>
+
+const app = Vue.createApp({
+	data(){
+		return {
+			five_day_forecast: [],
+			latitude: "loading",
+			longitude: "loading",
+			city: "loading",
+			state: "loading",
+			country: "loading",
+			
+			forecast_loading: "Please Wait As We Load The Forecast",
+			location_loading: "Please Wait As We Fetch Your Location",
+			current_weather_loading: "Please Wait As We Get The Current Weather",
+
+			current_time: "loading",
+			current_temp: "loading",
+			high_temp: "loading",
+			low_temp: "loading",
+			sky_conditions: "loading",
+			humidity: "loading",
+			pressure: "loading",			
+			//5day_forecast_text: "Please Wait For Forecast to Load",
+
+			num_neutral: 40,
+			num_likely: 0,
+			num_unlikely: 0,
+			}
+		},
+	created(){
+		fetch("https://api.ipbase.com/v1/json/?apikey=58Y95z2oJWC033H3s5St7toMbowBSnvcMzVGzbmm")
+			.then(response => response.json())
+			.then( json => {
+				theData = json;
+				this.latitude = theData.latitude;
+                                this.longitude = theData.longitude;
+                                this.city = theData.city;
+                                this.state = theData.region_name;
+                                this.country = theData.country_name;
+				this.location_loading = "Your Location";
+			})
+			.then(() => {
+				fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.latitude}&lon=${this.longitude}&appid=303181f2a99c8ec0f1ae511c681c0047&units=imperial`)
+					.then(response => response.json())
+					.then(json => {
+						current_weather_data = json;
+					})
+					.finally(()=>{
+						this.current_temp = current_weather_data.main.temp;
+                                                this.high_temp = current_weather_data.main.temp_max;
+                                                this.low_temp = current_weather_data.main.temp_min;
+                                                this.sky_conditions = current_weather_data.weather[0].description;
+                                                this.humidity = current_weather_data.main.humidity;
+                                                this.pressure = current_weather_data.main.pressure;
+						this.current_weather_loading = "Current Weather";
+						this.current_time = new Date(current_weather_data.dt * 1000);
+					})
+					.catch(err => {
+						console.log("an error occured")
+						this.current_weather_loading = "An Error Occured While Getting Current Weather Conditions";
+						})
+
+				
+				fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${this.latitude}&lon=${this.longitude}&appid=303181f2a99c8ec0f1ae511c681c0047&units=imperial`)
+					.then(response => response.json())
+					.then(json => {
+						forecast_data = json;
+					})
+					.finally(() => {
+						console.log("got forecast data, woohoo!");
+						this.five_day_forecast = forecast_data.list;
+						this.forecast_loading = "5 Day 3-hour Forecast"
+					})
+					.catch( err =>{
+						console.log("an error occured");
+						this.forecast_loading = "Sorry, an error occured while fetching the forecast";
+						})
+
+				})
+			.catch(err => {
+				console.log("an error occured");
+				this.location_loading = "Sorry, an error occured while fetching your location";
+				this.forecast_loading = "Sorry, an error occured while fetching the forecast";
+				this.current_weather_loading = "Sorry, an error occured while fetching the current weather";
+				})
+	},
+	methods: {
+		toggle(ev){
+			let ele = ev.currentTarget;
+			let vote = ele.getAttribute('vote');
+			let i = ele.getAttribute('data-index');
+		
+			let current_class = ele.getAttribute('class');
+
+			if (current_class == 'neutral'){
+				ele.setAttribute('class','likely');
+				this.num_likely = this.num_likely + 1;
+				this.num_neutral = this.num_neutral - 1;
+			} else if (current_class == 'likely'){
+				ele.setAttribute('class','unlikely');
+				this.num_unlikely = this.num_unlikely + 1;
+                                this.num_likely = this.num_likely - 1;
+			} else {
+				ele.setAttribute('class', 'neutral');
+				this.num_unlikely = this.num_unlikely - 1;
+				this.num_neutral = this.num_neutral + 1;
+			}
+
+			console.log(ele.getAttribute('class'));
+			
+		}
+	},
+
+					
+})
+
+
+const vm = app.mount('#my-app');
+		</script>
+	</body>
+</html>
+
+

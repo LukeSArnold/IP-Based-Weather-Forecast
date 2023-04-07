@@ -1,0 +1,201 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>Plan</title>
+	</head>
+	<body>
+		<div>
+			<pre>
+			<h1> Phase 0: Requirement Specifications </h1>
+				The main purpose of this assignment is to learn how to use Vue.js effectively.
+				The assignment requires us to make api calls to both a geolocation service and 
+				also to weather data services. We then use this information to properly display
+				weather data to a user based on their location.
+
+				A good solution properly secured the IP address, location, and weather for the client.
+
+				I think I"m getting pretty comfortable with APIs at this point in the semester so I"m not too worried
+				about that. Though I am worried about vue.js because I'm not familiar at all with the 
+				framework
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 1: System Analysis </h1>
+				The main information that the system needs to get going is the user's IP address. From there
+				the data will pass in that information into an API to secure the users geographic location. Using
+				that location the program will check the current weather localized to the user's location.
+
+				The proper output of the program is a webstie that contains not only the location, and current
+				wather, but also a five day forecast. 
+
+				We will use three different APIs to collect the users information
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 2: Design </h1>
+
+				INDEX.html
+				==============================================
+				create main div for the vue app to connect to
+				nest a div for the main header
+				nest a div for user location
+					you are located at {{city}},{{state}},{{country}} at {{latitude}} {{longitude}}
+
+				nest a div for the current weather conditions
+					{{current}}
+					{{high temp}}
+					{{low temp}}
+					{{sky_conditions}}
+					{humidity}}% 
+					{{presssure}}hPa
+
+				nest a div for the information in the five day forecast
+					div v-for="(item,idx) in five_day_forecast"
+					     {{create div}}
+				
+				[script]
+				fetch(url)
+				.then(make into json data)
+				.then(calculate needed location settings)
+				.then(
+					fetch(url)
+					.then(make into json data)
+					.then(calculate and update information for current weather)
+
+					fetch(url)
+					.then(make into json data)
+					.then(calculate and update information for the five day forcast)
+
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 3: Implementation </h1>
+
+			[!DOCTYPE html]
+[html]
+        [head]
+                [meta charset = "utf8"/]
+                [link rel = "stylesheet" href="style.css" type="text/css" /]
+                [title] Vue.js Weather [/title]
+                [script src="https://unpkg.com/vue@next"][/script]
+
+        [/head]
+        [body style='background-color: #000000']
+                [div id = "my-app"]
+                        [div style = "background-color: #0000FF" class = "stuff-box"]
+                                [h1] Vue.js Weather [/h2]
+                        [/div]
+                        [div style = "background-color: #AA00DD" class = "stuff-box"]
+                                [h2] {{location_loading}} [/h2]
+                                [p id = "main_div_location_text"]You are located in {{city}}, {{state}}, {{country}} at coordinates ( {{latitude}}, {{longitude}} )[/p]
+                        [/div]
+                        [div style = "background-color: #00DDAA" class = "stuff-box"]
+                                [h2] {{current_weather_loading}} [/h2]
+
+                                [p] Current weather conditions @ {{current_time}}[p]
+                                [ul]
+                                        [li id = "current_temp"] Currently: {{ current_temp }} [/l]
+                                        [li id = "high_temp"] High: {{ high_temp }} [/l]
+                                        [li id = "low_temp"] Low: {{low_temp}} [/l]
+                                        [li id = "weather_condition"] {{sky_conditions}} [/l]
+                                        [li id = "humidity"] {{humidity}}% humidity [/l]
+                                        [li id = "pressure"] {{pressure}} hPa Pressure [/l]
+                                [/ul]
+                        [/div]
+                        [div id = "5day_forecast" style = "background-color: #AADDFF" class = "stuff-box"]
+                                [h1] {{forecast_loading}} [/h1]
+                                [h3] {{num_neutral}} neutral [/h3]
+                                [h3] {{num_likely}} likely [/h3]
+                                [h3] {{num_unlikely}} unlikely [/h3]
+
+                                [div class = "neutral" v-for="(item,idx) in five_day_forecast"
+                                     :data-index="idx"
+                                     :status = "0"
+                                     @click="toggle"
+                                     ]
+                                     [h2] Conditions for {{item.dt_txt}} [/h2]
+                                     [ul]
+                                             [li] Temperature {{item.main.temp}} [/l]
+                                             [li] {{item.weather[0].main}} [/l]
+                                             [li] {{item.main.humidity}}% humidity [/l]
+                                             [li] {{item.main.pressure}} hPa [/l]
+                                     [/ul]
+                                [/div]
+
+
+                        [/div]
+                [/div]
+
+
+const app = Vue.createApp({
+        data(){
+                return {
+                        five_day_forecast: [],
+                        latitude: "loading",
+                        longitude: "loading",
+                        city: "loading",
+                        state: "loading",
+                        country: "loading",
+
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 4: Testing and Debugging </h1>
+
+			I ran into a lot of issues while writing this program. I've never had any experience with vue.js before
+			so I had a lot of problems that were probably pretty easy if your were more familiar with the framework.
+
+			initally I build the program completely in vanilla.js, I figured that once I did that it would be
+			pretty easy to change the parts I wrote in standard javascript into vue and carry on that way. I ended
+			up having to rewrite the entire application because non of it was written in a way that supported the use
+			of view. 
+
+			I had difficulty getting attributes assigned to the newley created DIVs for the forecast, but I think I got everything figured out
+
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 5: Deployment </h1>
+			
+			Successfully pushed it GitLab
+
+			</pre>
+		</div>
+		<div>
+			<pre>
+			<h1> Phase 6: Maintenance </h1>
+
+			* What parts of your program are sloppily written and hard to understand
+				- because I had difficulties formatting my VUE javascript the code I wrote is pretty jumbled.
+					I couldn't figure out promise chaining the way I was supposed to so I have a bit
+					of haduken code going on.
+				- If a bug was reported it would be pretty easy to fix bc the project is so small, with only one
+					file worth of javascript code.
+
+			*Will your documentation make sense to
+				- I think the code is pretty self explanatory. While it's a bit jumbled, all parts of hte program 
+					are short and relatively simple
+
+			*How easy will it be to add a new feature to this program in a year
+				- i think it will be pretty easy to add in a new feature. Because all parts of the code work pretty 
+					much on their own, it's just a matter of plugging in new data
+
+			*Will your program continue to work after (x) time
+				- The only reason my program would stop working, is if the API that we're using stop being supported.
+					Or the program could also stop working if I run out of free API calls.
+
+			</pre>
+		</div>
+
+	</body>
+</html>
+
+
+
+
+	
