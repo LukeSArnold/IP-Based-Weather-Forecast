@@ -1,4 +1,4 @@
-VUE.JS Weather
+IP Based Weather Forecast
 ========================
 
 APIS and Frameworks
